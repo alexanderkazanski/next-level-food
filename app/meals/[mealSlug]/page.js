@@ -4,12 +4,11 @@ import { getMeal } from '@/lib/meals';
 import { notFound } from 'next/navigation';
 
 export default function MealsDetailsPage({params}) {
-  try {
-    const { title, image, creator_email, summary, instructions } = getMeal(params.mealSlug);
-  } catch (error) {
-    // goes to closest not found page.
-    if (!title) notFound();
-  }
+    const meal = getMeal(params.mealSlug);
+
+    if (!meal) notFound();
+
+    const { title, image, creator_email, summary, instructions } = meal;
 
   let htmlInstructions = instructions.replace(/\n/g, '<br />')
 
