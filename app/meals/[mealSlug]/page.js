@@ -1,21 +1,37 @@
 import Image from 'next/image';
 import classes from './page.module.css';
+import { getMeal } from '@/lib/meals';
+import { notFound } from 'next/navigation';
 
-export default function MealsDetails({params}) {
+export default function MealsDetailsPage({params}) {
+  try {
+    const { title, image, creator_email, summary, instructions } = getMeal(params.mealSlug);
+  } catch (error) {
+    // goes to closest not found page.
+    if (!title) notFound();
+  }
+
+  let htmlInstructions = instructions.replace(/\n/g, '<br />')
+
+
   return <>
     <header classes={classes.header}>
       <div className={classes.image}>
-        <Image fill  />
+        <Image src={image} fill alt={summary} />
       </div>
       <div className={classes.headerText}>
-        <h1>TITLE</h1>
-        <p className={classes.creator}>by <a href={`mailto:${}`}>NAME</a></p>
-        <p className={classes.summary}>SUMMARY</p>
+        <h1>{title}</h1>
+        <p className={classes.creator}>by <a href={`mailto:${creator_email}`}>{creator_email}</a></p>
+        <p className={classes.summary}>{summary}</p>
       </div>
     </header>
     <main>
-      <p className={classes.instructions}></p>
+      <p 
+        className={classes.instructions}
+        dangerouslySetInnerHTML={{
+          __html: `${htmlInstructions}`,
+        }}
+      ></p>
     </main>
-    <p>{params.mealSlug} - Meal Slug</p>
   </>
 }
